@@ -11,6 +11,19 @@ The six workstreams below have assigned owners and different reviewers. Ownershi
 | Frontend and report experience | @VinayakPaka | @Navneet-Scaler | Leaderboard, example inspection, judge comparisons, review interaction | Report view wired to agreed contracts |
 | LLMOps and integration | @Dpkch06 | @omwagh28 | Tracing, deployment, shadow comparison, rollback, load testing, reproducibility | Traceable vertical slice and rollback evidence |
 
+## Directory ownership
+
+| Member | Owned paths |
+| --- | --- |
+| Navneet-Scaler | data/, docs/domain/ |
+| Vijaygaurav2004 | packages/evaluation/, configs/judges/, configs/rubrics/ |
+| omwagh28 | packages/statistics/, configs/releases/ |
+| VinnuReddy18 | services/api/, services/worker/ |
+| VinayakPaka | apps/web/ |
+| Dpkch06 | infra/, .github/, root setup files, integration docs |
+
+Tests live inside their owner's directory. Shared root files have one owner. Branches keep separate path changes; API and data contracts are agreed through the evaluation schemas. No implementation commits are pushed or merged until requested.
+
 ## Shared work
 
 All teammates author cases and independently review someone else's labels. Agree on the rubric before expanding the dataset. No author supplies both supposedly independent labels. Resolve disagreements with source evidence and preserve original labels.

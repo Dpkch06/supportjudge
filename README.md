@@ -2,7 +2,7 @@
 
 SupportJudge will compare AI customer-support answer configurations and measure how reliably LLM judges evaluate them. It will produce a leaderboard, inspectable evidence, and a release decision based on versioned rules.
 
-**Status:** Scope and repository structure only. The application, datasets, metrics, and deployment are not implemented. No performance results are claimed.
+**Status:** A local first version is implemented across six unpushed workstream branches. The offline demo and 11 behavior tests pass. A browser experiment was verified end to end. Live model quality, genuine human calibration, deployment, and course-ready evaluation data remain unverified. See [v1 setup](docs/setup-v1.md).
 
 ## Problem and objective
 
@@ -57,7 +57,7 @@ Published views contain approved fictional examples and completed reports only. 
 
 ## Proposed architecture and stack
 
-This is the initial design, subject to a documented change when implementation evidence warrants it.
+The table below records the original target design. V1 uses a static JavaScript frontend, SQLite, one FastAPI process with a worker thread, and report-local traces. Next.js, PostgreSQL, a separate worker process, and Langfuse are deferred. See [implementation plan](docs/implementation-plan.md) and [v1 setup](docs/setup-v1.md) for actual behavior.
 
 | Component | Choice and purpose |
 | --- | --- |
@@ -131,7 +131,7 @@ tests/                    Behavior and integration tests
 
 ## Setup and milestones
 
-There is no runnable application yet. Clone the repository and read [team distribution](docs/team-distribution.md) before choosing work. Dependencies, environment variables, and exact commands will be added alongside working code, not as speculative setup instructions.
+Run the assembled local working copy using the commands in [v1 setup](docs/setup-v1.md). Each workstream is committed separately and remains unpushed and unmerged. Individual branches depend on the other components and are not standalone applications. Read [team distribution](docs/team-distribution.md) before edits.
 
 1. Assign owners; freeze a small policy subset; define data contracts and rubric anchors.
 2. Author and independently label a 10-scenario development pilot; run two baseline judges.
