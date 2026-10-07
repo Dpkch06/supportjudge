@@ -1,21 +1,21 @@
 # Team distribution
 
-Replace placeholders with teammate names and GitHub handles before assigning issues. Six workstreams are a proposed division, not an assumption about team size. For a smaller team, combine adjacent roles; for a larger team, split dataset review and integration. Each workstream needs an owner and a different reviewer.
+The six workstreams below have assigned owners and different reviewers. Ownership identifies who reviews and maintains the component. Commit authorship remains separate and will use confirmed details only. VinayakPaka and omwagh28 had pending repository invitations when this plan was created.
 
 | Workstream | Owner | Reviewer | Responsibilities | First deliverable |
 | --- | --- | --- | --- | --- |
-| Domain and human evaluation | [Name / @handle] | [Name / @handle] | Policy manifest, scenarios, independent labels, adjudication, split control | Reviewed policy subset and 10-case pilot |
-| Judge engine and rubrics | [Name / @handle] | [Name / @handle] | Provider adapters, pointwise/pairwise prompts, swapping, validation, judge configuration | Two judges scoring fixed pilot answers |
-| Statistics and release checks | [Name / @handle] | [Name / @handle] | Agreement metrics, false acceptance/rejection, bootstrap intervals, release policy, CLI and CI | Reproducible report and intentionally failing regression |
-| Backend and job processing | [Name / @handle] | [Name / @handle] | API contracts, PostgreSQL schema, job lifecycle, retries, access controls | Submit, process, and retrieve a run |
-| Frontend and report experience | [Name / @handle] | [Name / @handle] | Leaderboard, example inspection, judge comparisons, review interaction | Report view wired to agreed contracts |
-| LLMOps and integration | [Name / @handle] | [Name / @handle] | Tracing, deployment, shadow comparison, rollback, load testing, reproducibility | Traceable vertical slice and rollback evidence |
+| Domain and human evaluation | @Navneet-Scaler | @VinnuReddy18 | Policy manifest, scenarios, independent labels, adjudication, split control | Reviewed policy subset and 10-case pilot |
+| Judge engine and rubrics | @Vijaygaurav2004 | @Dpkch06 | Provider adapters, pointwise/pairwise prompts, swapping, validation, judge configuration | Two judges scoring fixed pilot answers |
+| Statistics and release checks | @omwagh28 | @Vijaygaurav2004 | Agreement metrics, false acceptance/rejection, bootstrap intervals, release policy, CLI and CI | Reproducible report and intentionally failing regression |
+| Backend and job processing | @VinnuReddy18 | @VinayakPaka | API contracts, v1 SQLite persistence and future PostgreSQL schema, job lifecycle, retries, access controls | Submit, process, and retrieve a run |
+| Frontend and report experience | @VinayakPaka | @Navneet-Scaler | Leaderboard, example inspection, judge comparisons, review interaction | Report view wired to agreed contracts |
+| LLMOps and integration | @Dpkch06 | @omwagh28 | Tracing, deployment, shadow comparison, rollback, load testing, reproducibility | Traceable vertical slice and rollback evidence |
 
 ## Shared work
 
 All teammates author cases and independently review someone else's labels. Agree on the rubric before expanding the dataset. No author supplies both supposedly independent labels. Resolve disagreements with source evidence and preserve original labels.
 
-All teammates contribute to README measurements, architecture reasoning, demonstration, and presentation. The domain owner controls held-out access until final configurations are frozen. Choose a coordinator, [Name / @handle], to resolve interface and schedule dependencies; coordination is not ownership of every component.
+All teammates contribute to README measurements, architecture reasoning, demonstration, and presentation. The domain owner controls held-out access until final configurations are frozen. The coordinator is @Dpkch06 to resolve interface and schedule dependencies; coordination is not ownership of every component.
 
 ## Interfaces to agree first
 
