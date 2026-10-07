@@ -4,7 +4,7 @@
   const toggle=document.createElement('button');toggle.id='sidebar-toggle';toggle.type='button';toggle.setAttribute('aria-controls','sidebar-navigation');
   toggle.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>';
   const nav=document.createElement('nav');nav.id='sidebar-navigation';nav.setAttribute('aria-label','Main navigation');
-  const links=[['/','New experiment'],['/experiments','Experiments'],['/judge-comparison','Compare judges'],['/judges-pair','Compare rubric versions'],['/docs','API reference']];
+  const links=[['/','New experiment'],['/experiments','Experiments'],['/judge-comparison','Compare judges'],['/judges-pair','Compare rubric versions'],['/human-review','Human review'],['/docs','API reference']];
   links.forEach(([href,label])=>{const a=document.createElement('a');a.href=href;a.textContent=label;if(location.pathname===href||(href==='/experiments'&&location.pathname.startsWith('/experiments/')))a.setAttribute('aria-current','page');nav.append(a);});
   sidebar.append(toggle,nav);document.body.prepend(sidebar);
   const backdrop=document.createElement('button');backdrop.id='sidebar-backdrop';backdrop.setAttribute('aria-label','Close sidebar');backdrop.tabIndex=-1;document.body.append(backdrop);
