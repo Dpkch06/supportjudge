@@ -56,6 +56,14 @@ def summarize(rows, dataset, settings, mode, answer_source, traces):
                             "order_consistency": sum(r["order_consistent"] for r in selected) / len(selected),
                             "paired_delta_B_minus_A": round(statistics.mean(deltas), 4),
                             "paired_delta_interval": interval(deltas)})
+    provisional = []
+    for judge in judges:
+        pairs = [(r, cases[r["case_id"]].labels) for r in rows if r["judge"] == judge
+                 and cases[r["case_id"]].labels.status == "ai_authored" and answer_source == "fixtures"]
+        comparisons = [(r["points"][a]["verdict"], v) for r, labels in pairs for a, v in labels.verdicts.items()]
+        provisional.append({"judge": judge, "reference_labels": len(comparisons),
+                            "agreement": sum(p == v for p, v in comparisons) / len(comparisons) if comparisons else None,
+                            "provenance": "AI-authored provisional references, not human calibration"})
     disagreements = []
     for case_id in cases:
         group = [r for r in rows if r["case_id"] == case_id]
@@ -78,7 +86,7 @@ def summarize(rows, dataset, settings, mode, answer_source, traces):
             reasons.append(f'{c["judge"]}: inconsistent swapped preferences')
     latencies = [t["latency_seconds"] for t in traces if not t.get("cache_hit")]
     costs = [t["cost_usd"] for t in traces]
-    return {"leaderboard": leaderboard, "calibration": calibration, "disagreements": disagreements,
+    return {"leaderboard": leaderboard, "calibration": calibration, "provisional_reference": provisional, "disagreements": disagreements,
             "gate": {"passed": not reasons and bool(calibration), "reasons": reasons},
             "metrics": {"calls": len(traces), "cache_hits": sum(t.get("cache_hit", False) for t in traces),
                         "latency_p50": percentile(latencies, .5), "latency_p99": percentile(latencies, .99),
