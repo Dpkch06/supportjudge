@@ -118,12 +118,18 @@ class Settings(Record):
         return self
 
 
+class GeneratorPrompts(Record):
+    A: str = Field(min_length=1, max_length=10000, pattern=r"\S")
+    B: str = Field(min_length=1, max_length=10000, pattern=r"\S")
+
+
 class Request(Record):
     mode: Literal["demo", "live"] = "demo"
     answer_source: Literal["fixtures", "generate"] = "fixtures"
     dataset: str = Field(default="demo", pattern=r"^[a-zA-Z0-9_-]+$")
     split: Literal["development", "heldout"] = "development"
     generator_models: list[str] | None = Field(default=None, min_length=2, max_length=2)
+    generator_prompts: GeneratorPrompts | None = None
     judge_models: list[str] | None = Field(default=None, min_length=2, max_length=2)
     judge_selection: Literal["configured", "rotate", "manual"] = "configured"
     case_id: str | None = None
