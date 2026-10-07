@@ -2,7 +2,7 @@
 
 SupportJudge will compare AI customer-support answer configurations and measure how reliably LLM judges evaluate them. It will produce a leaderboard, inspectable evidence, and a release decision based on versioned rules.
 
-**Status:** The local application runs live OpenRouter evaluations with GPT-4.1 mini and Gemini 2.5 Flash. The first 30-question comparison completed with 240 judge calls. New browser experiments generate answers before judging them. Twenty-six behavior tests pass. Human calibration and public deployment remain pending. The experiment form supports separate OpenRouter generator and judge choices, plus automatic judge rotation. See [v1 setup](docs/setup-v1.md) and the [feature audit](docs/feature-status.md).
+**Status:** The local app supports live OpenRouter generation and judging, model selection, rubric-version comparison, and human review. All 31 behavior tests pass. The held-out measurement run completed 30 questions and 300 live calls in 16.3 minutes. Submission p95 was 48.6 ms at five concurrent clients; per-question provider-time p95 was 40.6 seconds. Swapped-order consistency was 80% for Claude and 66.7% for Mistral. Human calibration of this run and public deployment remain pending. See the [measurement report](reports/measurement-report.md), [v1 setup](docs/setup-v1.md), and [feature audit](docs/feature-status.md).
 
 ## Problem and objective
 

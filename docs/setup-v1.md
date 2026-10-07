@@ -24,7 +24,7 @@ Choose Generator A and Generator B from the OpenRouter catalog. The default gene
 
 The A and B prompts still differ. A model comparison therefore changes both prompt and model unless you align the prompts in the configuration. To measure a rubric change, keep the judges and generated answers fixed. Catalog compatibility does not guarantee every provider will return valid output; failed evaluations remain failed.
 
-The page shows numbered experiments, scores, confidence intervals, order consistency, disagreements, evidence, and downloadable reports. It omits human-review and release-approval controls. Underlying reports retain dataset provenance. Without reviewed reference verdicts, human agreement and false-acceptance rates cannot be measured.
+The page shows numbered experiments, scores, confidence intervals, order consistency, disagreements, evidence, and downloadable reports. Human review has its own sidebar page. Release-approval controls remain outside the UI. Without adjudicated reference verdicts, human agreement and false-acceptance rates cannot be measured.
 
 ## Command line and checks
 
@@ -55,4 +55,10 @@ A comparison reuses the original answers and policy evidence, pins judge models 
 
 The home page contains only the new-experiment form. Saved runs appear on the Experiments page. The sidebar opens and closes, remembers its desktop state, and becomes an overlay on narrow windows. Compare judges shows judges within one experiment; Compare rubric versions matches the same judges across a saved parent/version pair.
 
-The next feature is blind human review. Reviewers should label answers without seeing model judgments; independent reviews and adjudication will supply reference verdicts for judge calibration.
+## Human review
+
+Open Human review in the sidebar and choose a completed experiment. Enter your name or GitHub handle and load questions. Read the policy and anonymous X/Y answers, choose accept or reject for each, select the better answer, and explain your decision. The page hides model names, judge verdicts and other reviewers' labels. Answer order depends on the reviewer.
+
+Have a second teammate independently review the same experiment under their own name. Then open Adjudicate, inspect both submissions, and save the agreed verdicts and reason. Original reviews stay stored and cannot be overwritten. Names are self-declared; the app does not authenticate reviewers or verify their independence.
+
+Open Judge agreement to see each judge's verdict agreement, preference agreement, false acceptance, false rejection and abstentions against the adjudicated answers. Rates show their reference counts. Download the records and metrics as JSON. Reviews belong to the exact saved answers in one experiment; they are not copied to other experiments. These metrics do not change past reports or approve a release.
