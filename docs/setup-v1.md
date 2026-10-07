@@ -1,49 +1,39 @@
-# Run the first version
+# Run SupportJudge
 
-The first version is a local application with a static frontend, FastAPI, one worker thread, SQLite, JSON reports, and an OpenAI-compatible model adapter. Run commands from the repository root.
+Run commands from the repository root. Copy .env.example to .env, set OPENROUTER_API_KEY, and keep SUPPORTJUDGE_CONFIG=openrouter.json. The app loads .env automatically; Git ignores it.
 
 ```powershell
 python -m pip install -e '.[dev]'
-$env:SUPPORTJUDGE_TEAM_TOKEN = 'a-long-random-team-token'
 python -m supportjudge_cli.cli serve
 ```
 
-Open http://127.0.0.1:8000. Enter the team token in the experiment form and start the offline demo. The browser stores the token only in the current page input. API documentation is at /docs.
+Open http://127.0.0.1:8000. Select the support dataset and development or held-out split, then click Run comparison. No team token is required. The server binds to localhost and uses one worker. Saved experiments remain in SQLite after restart.
+
+## Model roles
+
+Choose Generator A and Generator B from the OpenRouter catalog. The default generators are GPT-4.1 mini and Gemini 2.5 Flash. Automatic mode rotates across available Claude, DeepSeek, Mistral, Gemini and GPT judges, excluding both generator model IDs. Consecutive automatic experiments use different judge pairs. Manual mode lets you choose two distinct JSON-capable judges. Both judges score both answers and compare them in both orders. Selected IDs and current pricing are pinned in each run.
+
+The A and B prompts still differ. A model comparison therefore changes both prompt and model unless you align the prompts in the configuration. To measure a rubric change, keep the judges and generated answers fixed. Catalog compatibility does not guarantee every provider will return valid output; failed evaluations remain failed.
+
+The page shows numbered experiments, scores, confidence intervals, order consistency, disagreements, evidence, and downloadable reports. It omits human-review and release-approval controls. Underlying reports retain dataset provenance. Without reviewed reference verdicts, human agreement and false-acceptance rates cannot be measured.
+
+## Command line and checks
 
 ```powershell
 python -m pytest -q
-python -m supportjudge_cli.cli evaluate --output reports/demo.json
-python -m supportjudge_cli.cli evaluate --gate
+python -m supportjudge_cli.cli evaluate --output reports/live.json
 ```
 
-The last command deliberately exits 1. Simulated evaluations must never approve a real release. Other evaluation failures exit 2. No runnable commands require a teammate's GitHub credentials.
+The CLI defaults to live models, generated answers, support-v1, and development. Internal deterministic test doubles remain for repeatable unit tests; the app and CLI do not offer an offline evaluation mode. The normal CI workflow runs tests without API keys. Provider failures exit 2. The optional CLI release gate exits 1 when its calibration requirements are unmet.
 
-## Live evaluation
+## Operations
 
-Copy configs/judges/live.example.json to configs/judges/live.json. Replace both judge model identifiers with distinct available models, configure provider base URLs and key environment names, and set answer-model IDs when generating answers. Enter current token prices if you want cost estimates; unknown pricing stays null rather than appearing as zero.
+Each report pins the dataset and settings hashes and records model identifiers, token counts, cost, cache usage, and call latency. OpenRouter reported cost takes precedence over estimates from configured token prices. Cached calls incur no new provider charge. Run only one application worker. Interrupted running jobs fail explicitly on restart; pending jobs remain queued. No automatic retry conceals duplicate charges.
 
-Set provider keys locally. Do not send keys in chat or commit them. The adapter uses POST /chat/completions with JSON output and a 90-second timeout. It expects an OpenAI-compatible response; providers with other APIs require an adapter. See the official [Chat Completions reference](https://developers.openai.com/api/reference/resources/chat).
+The first completed live run evaluated 30 fixed answer pairs with two judges and both answer orders, for 240 calls. New browser runs generate both answers first. Human calibration, an online drift study, and public deployment remain pending.
 
-```powershell
-$env:OPENAI_API_KEY = 'your-key'
-python -m supportjudge_cli.cli evaluate --mode live --output reports/live.json
-python -m supportjudge_cli.cli evaluate --mode live --answers generate --output reports/generated.json
-```
+## Edit a saved rubric
 
-The committed demo data has no human labels and therefore cannot pass calibration even with live judges. Add independently reviewed fixed-answer labels to a separate dataset before measuring human agreement. Generated answers are unreviewed; labels for fixture answers cannot be transferred to newly generated answers.
+Click an experiment number to open its page. The page loads the saved generator models, judge models, prompts and exact rubric. Edit the score descriptions directly or choose a stricter starting point, give the comparison a name, and click Run rubric comparison. Reset restores the original descriptions. An unchanged rubric cannot start a comparison.
 
-## Data and review
-
-Add a JSON dataset under data/evals/ with the structure in demo.json. Mark AI-generated material accurately. Do not use real tickets or secrets; report read endpoints are public in this first version. Gold labels require status human_reviewed, two distinct reviewer names, verdicts, and an adjudication rationale. The application cannot verify that names represent two different people; the team must verify independence.
-
-Browser reviews append records to the database. They do not silently update gold labels. Export through the authenticated annotations endpoint, independently adjudicate, then import a new dataset version. Public case data contains fictional scenarios only.
-
-## Operations and limitations
-
-Use one application worker only. Each run stores a snapshot of its dataset and configuration. On restart, interrupted running jobs fail explicitly; pending jobs remain queued. Cached completed calls allow a newly submitted run to reuse results. No automatic retries risk undisclosed duplicate charges. A provider timeout can still incur charges even if no answer was received.
-
-Each report contains per-call traces, reported token usage, optional estimated cost, actual model identifiers, hashes, code commit, and p50/p99 call latency. These are local traces, not a Langfuse integration. Bootstrap intervals cover scenario sampling only. No live-provider quality measurements, genuine human calibration, load tests, online drift study, or public deployment have been completed.
-
-Configuration approval is recorded by the authenticated promotion endpoint only after a live report passes the conservative gate. It does not automatically deploy or change the live settings file. To compare a new judge in shadow mode, run the same fixture dataset with a separate live configuration; to roll back, restore the previous versioned configuration. Automated online sampling and deployment rollback remain follow-up work.
-
-The GitHub workflow runs tests and demo checks without secrets. It is not a protected production release gate until configured as a required check and connected to a trusted live evaluation dataset. Keep live.json local and version a sanitized copy of real configuration before reporting reproducible release results.
+A comparison reuses the original answers and policy evidence, pins judge models and instructions, and changes only the rubric. It creates a separate saved experiment. The results show edited descriptions, per-dimension score differences, pairwise preference changes and judge explanations. Reloading a comparison URL restores its results. Single reruns still include model sampling variation, so a changed score alone is not conclusive causal evidence.

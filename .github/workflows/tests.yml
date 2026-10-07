@@ -1,4 +1,4 @@
-name: Tests and demo
+name: Tests
 on: [push, pull_request]
 permissions:
   contents: read
@@ -12,15 +12,3 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install -e '.[dev]'
       - run: python -m pytest -q
-      - run: python -m supportjudge_cli.cli evaluate --output reports/demo.json
-      - name: Verify demo cannot pass a release gate
-        shell: bash
-        run: |
-          set +e
-          python -m supportjudge_cli.cli evaluate --gate --output reports/demo-gate.json
-          result=$?
-          test "$result" -eq 1
-      - uses: actions/upload-artifact@v4
-        with:
-          name: simulated-demo-reports
-          path: reports/demo*.json
