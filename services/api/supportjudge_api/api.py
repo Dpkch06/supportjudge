@@ -51,6 +51,8 @@ def create_app(store=None, start_worker=True):
             thread.join(timeout=2)
 
     app = FastAPI(title="SupportJudge", version="0.1.0", lifespan=lifespan)
+    from supportjudge_api.human_review import router
+    app.include_router(router(store))
 
     @app.get("/api/health")
     def health():
@@ -248,6 +250,10 @@ def create_app(store=None, start_worker=True):
 
     static = ROOT / "apps" / "web"
     app.mount("/static", StaticFiles(directory=static), name="static")
+
+    @app.get("/human-review")
+    def human_review_page():
+        return FileResponse(static / "human-review.html")
 
     @app.get("/experiments")
     def experiments_page():
