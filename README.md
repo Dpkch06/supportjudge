@@ -2,7 +2,7 @@
 
 SupportJudge will compare AI customer-support answer configurations and measure how reliably LLM judges evaluate them. It will produce a leaderboard, inspectable evidence, and a release decision based on versioned rules.
 
-**Status:** The local application runs live OpenRouter evaluations with GPT-4.1 mini and Gemini 2.5 Flash. The first 30-question comparison completed with 240 judge calls. New browser experiments generate answers before judging them. Twenty-five behavior tests pass. Human calibration and public deployment remain pending. The experiment form supports separate OpenRouter generator and judge choices, plus automatic judge rotation. See [v1 setup](docs/setup-v1.md) and the [feature audit](docs/feature-status.md).
+**Status:** The local application runs live OpenRouter evaluations with GPT-4.1 mini and Gemini 2.5 Flash. The first 30-question comparison completed with 240 judge calls. New browser experiments generate answers before judging them. Twenty-six behavior tests pass. Human calibration and public deployment remain pending. The experiment form supports separate OpenRouter generator and judge choices, plus automatic judge rotation. See [v1 setup](docs/setup-v1.md) and the [feature audit](docs/feature-status.md).
 
 ## Problem and objective
 
