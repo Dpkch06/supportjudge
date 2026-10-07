@@ -22,7 +22,7 @@ class Evidence(Record):
 
 
 class Labels(Record):
-    status: Literal["unreviewed", "human_reviewed"] = "unreviewed"
+    status: Literal["unreviewed", "ai_authored", "human_reviewed"] = "unreviewed"
     reviewers: list[str] = []
     verdicts: dict[str, Literal["accept", "reject"]] = {}
     preference: Literal["A", "B", "tie", "insufficient"] | None = None
@@ -123,6 +123,12 @@ class Request(Record):
     answer_source: Literal["fixtures", "generate"] = "fixtures"
     dataset: str = Field(default="demo", pattern=r"^[a-zA-Z0-9_-]+$")
     split: Literal["development", "heldout"] = "development"
+    generator_models: list[str] | None = Field(default=None, min_length=2, max_length=2)
+    judge_models: list[str] | None = Field(default=None, min_length=2, max_length=2)
+    judge_selection: Literal["configured", "rotate", "manual"] = "configured"
+    case_id: str | None = None
+    traffic: Literal["offline", "simulated_online"] = "offline"
+    configuration: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9_-]+$")
 
 
 class Annotation(Record):

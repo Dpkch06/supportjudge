@@ -57,10 +57,16 @@ class Provider:
                 response.raise_for_status()
                 raw = response.json()
             content = raw["choices"][0]["message"]["content"]
-            value = json.loads(content) if schema else content
+            if schema:
+                lines = content.strip().splitlines()
+                if len(lines) >= 3 and lines[0].strip().lower() in {"```json", "```"} and lines[-1].strip() == "```":
+                    content = "\n".join(lines[1:-1])
+                value = json.loads(content)
+            else:
+                value = content
             usage = raw.get("usage", {})
-            cost = None
-            if config.input_per_million is not None and config.output_per_million is not None:
+            cost = usage.get("cost")
+            if cost is None and config.input_per_million is not None and config.output_per_million is not None:
                 cost = (usage.get("prompt_tokens", 0) * config.input_per_million + usage.get("completion_tokens", 0) * config.output_per_million) / 1e6
             trace = {"model": raw.get("model", config.model), "latency_seconds": time.perf_counter() - start,
                      "tokens": usage.get("total_tokens", 0), "cost_usd": cost, "cache_hit": False}
@@ -76,7 +82,7 @@ def evaluate(dataset, settings, request, cache):
     started = time.perf_counter()
     if request.mode == "demo" and request.answer_source != "fixtures":
         raise ValueError("Demo mode cannot generate model answers")
-    cases = [c for c in dataset.cases if c.split == request.split]
+    cases = [c for c in dataset.cases if c.split == request.split and (request.case_id is None or c.id == request.case_id)]
     if not cases:
         raise ValueError("Selected split has no cases")
     selected = dataset.model_copy(update={"cases": cases})
@@ -108,7 +114,17 @@ def evaluate(dataset, settings, request, cache):
         commit = "unavailable"
     return {"mode": request.mode, "answer_source": request.answer_source, "created": datetime.now(timezone.utc).isoformat(),
             "versions": {"dataset": digest(dataset.model_dump()), "settings": digest(settings.model_dump()), "commit": commit,
-                         "request": request.model_dump(), "settings_snapshot": settings.model_dump()},
+                         "request": request.model_dump(), "settings_snapshot": settings.model_dump(),
+                         "implementation_hash": implementation_hash()},
             "dataset_name": dataset.name, "dataset_provenance": dataset.provenance, "rows": rows,
             **summarize(rows, selected, settings, request.mode, request.answer_source, provider.traces),
             "traces": provider.traces, "elapsed_seconds": round(time.perf_counter() - started, 4)}
+
+
+def implementation_hash():
+    from pathlib import Path
+    from .files import ROOT
+    files = []
+    for directory in ("packages", "services", "infra", "apps/web"):
+        files.extend(p for p in (ROOT / directory).rglob("*") if p.suffix in {".py", ".js", ".css", ".html"} and "__pycache__" not in p.parts)
+    return digest({str(p.relative_to(ROOT)): p.read_text(encoding="utf-8") for p in sorted(files)})

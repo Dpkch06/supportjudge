@@ -47,3 +47,19 @@ def test_unknown_evidence_rejected(tmp_path, monkeypatch):
     monkeypatch.setattr(httpx.Client,'post',post)
     with pytest.raises(ValueError,match='unknown evidence'):
         Provider('live',Store(tmp_path/'test.db'),'test').call(load_settings('demo').judges[0],'test',{'evidence':[{'id':'known'}]},Point)
+
+
+def test_provider_json_fence_is_parsed_but_extra_prose_is_rejected(tmp_path, monkeypatch):
+    import httpx
+    monkeypatch.setenv('OPENAI_API_KEY','test-only')
+    value={'scores':dict(faithfulness=4,helpfulness=4,safety=4,format_adherence=4),'verdict':'accept','reason':'Supported','evidence_ids':['known']}
+    content='```json\n'+json.dumps(value)+'\n```'
+    def post(self,url,**kwargs):
+        return httpx.Response(200,request=httpx.Request('POST',url),json={'choices':[{'message':{'content':content}}]})
+    monkeypatch.setattr(httpx.Client,'post',post)
+    config=load_settings('demo').judges[0]
+    provider=Provider('live',Store(tmp_path/'test.db'),'test')
+    assert provider.call(config,'test',{'evidence':[{'id':'known'}]},Point).verdict=='accept'
+    content='Here is my answer: '+json.dumps(value)
+    with pytest.raises(json.JSONDecodeError):
+        provider.call(config,'changed',{'evidence':[{'id':'known'}]},Point)
