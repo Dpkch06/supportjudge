@@ -16,6 +16,7 @@ class Store:
                 CREATE TABLE IF NOT EXISTS cache(key TEXT PRIMARY KEY, value TEXT);
                 CREATE TABLE IF NOT EXISTS annotations(id TEXT PRIMARY KEY, run_id TEXT, value TEXT, created TEXT);
                 CREATE TABLE IF NOT EXISTS promotions(id TEXT PRIMARY KEY, run_id TEXT, settings_hash TEXT, created TEXT);
+                CREATE TABLE IF NOT EXISTS activations(id TEXT PRIMARY KEY, promotion_id TEXT, created TEXT);
             """)
 
     def connection(self):
@@ -35,6 +36,7 @@ class Store:
     def create_run(self, request):
         run_id = uuid.uuid4().hex
         with self.connection() as db:
+            db.execute("BEGIN IMMEDIATE")
             active = db.execute("SELECT count(*) FROM runs WHERE state IN ('pending','running')").fetchone()[0]
             if active >= 10:
                 raise ValueError("Run queue is full; wait for current jobs")
@@ -62,6 +64,21 @@ class Store:
         with self.connection() as db:
             return [dict(r) for r in db.execute("SELECT id,state,created,error FROM runs ORDER BY created DESC LIMIT 100")]
 
+    def latest_judges(self):
+        with self.connection() as db:
+            row = db.execute("SELECT request FROM runs WHERE json_extract(request,'$.parameters.mode')='live' ORDER BY rowid DESC LIMIT 1").fetchone()
+        return [m["model"] for m in json.loads(row[0])["settings_snapshot"]["judges"]] if row else []
+
+    def experiments(self):
+        with self.connection() as db:
+            return [dict(r) for r in db.execute("""
+                SELECT id,state,created,ROW_NUMBER() OVER (ORDER BY rowid) AS number
+                FROM runs
+                WHERE json_extract(request,'$.parameters.mode')='live'
+                  AND json_extract(request,'$.parameters.dataset')!='demo'
+                ORDER BY rowid DESC
+            """)]
+
     def run(self, run_id):
         with self.connection() as db:
             row = db.execute("SELECT * FROM runs WHERE id=?", (run_id,)).fetchone()
@@ -87,3 +104,16 @@ class Store:
     def promotions(self):
         with self.connection() as db:
             return [dict(row) for row in db.execute("SELECT * FROM promotions ORDER BY created DESC")]
+
+    def activate(self, promotion_id):
+        with self.connection() as db:
+            row = db.execute("SELECT * FROM promotions WHERE id=?", (promotion_id,)).fetchone()
+            if not row:
+                raise ValueError("Unknown approved configuration")
+            db.execute("INSERT INTO activations VALUES (?,?,?)", (uuid.uuid4().hex, promotion_id, datetime.now(timezone.utc).isoformat()))
+            return dict(row)
+
+    def active(self):
+        with self.connection() as db:
+            row = db.execute("SELECT p.* FROM activations a JOIN promotions p ON a.promotion_id=p.id ORDER BY a.rowid DESC LIMIT 1").fetchone()
+        return dict(row) if row else None
