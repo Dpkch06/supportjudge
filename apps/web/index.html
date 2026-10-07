@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SupportJudge</title><link rel="icon" href="data:,"><link rel="stylesheet" href="/static/style.css"></head>
-<body><header><a href="/">SupportJudge</a><span>Customer support evaluation</span><a href="/docs">API reference</a></header>
-<main><section class="intro"><p class="eyebrow">COMPARE ANSWERS. CHECK THE JUDGES.</p><h1>Compare support models.</h1><p>Generate two answers, evaluate them against policy evidence, and inspect where the judges disagree.</p></section>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SupportJudge</title><link rel="icon" href="data:,"><link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/shell.css"><script src="/static/shell.js" defer></script></head>
+<body><header><a href="/">SupportJudge</a></header>
+<main class="new-experiment-page">
 <section class="panel"><h2>New experiment</h2><div id="model-roles"></div>
 <form id="experiment"><label>Dataset<select id="dataset"></select></label><label>Split<select id="split"><option value="development">Development</option><option value="heldout">Held out</option></select></label><label>Generator A<select id="generator-a" required></select></label><label>Generator B<select id="generator-b" required></select></label><label>Choose judges<select id="judge-selection"><option value="rotate">Rotate automatically each experiment</option><option value="manual">Choose my own judges</option></select></label><label id="judge-a-label" hidden>Judge 1<select id="judge-a"></select></label><label id="judge-b-label" hidden>Judge 2<select id="judge-b"></select></label><button id="run-button" disabled>Run comparison</button></form><p id="message" role="status"></p></section>
-<section class="workspace"><aside class="panel"><h2>Experiments</h2><button id="refresh" class="secondary">Refresh</button><div id="runs"></div></aside><article id="result" class="panel"><h2>Your comparison report</h2><p class="muted">Start an experiment or select a saved report.</p></article></section>
-</main><footer>Independent student project. Not Dropbox support.</footer><script src="/static/app.js" defer></script></body></html>
+
+</main><script src="/static/app.js" defer></script></body></html>
