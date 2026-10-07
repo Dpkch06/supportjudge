@@ -80,7 +80,8 @@ def create_app(store=None, start_worker=True):
         if active:
             from supportjudge_evaluation.models import Settings
             settings = Settings.model_validate(store.run(active["run_id"])["report"]["versions"]["settings_snapshot"])
-        return {"generators": [{"id": m.id, "model": m.model} for m in settings.answer_models],
+        return {"generator_prompts": settings.answer_prompts,
+                "generators": [{"id": m.id, "model": m.model} for m in settings.answer_models],
                 "judges": [{"id": m.id, "model": m.model} for m in settings.judges]}
 
     @app.get("/api/runs")
@@ -106,6 +107,8 @@ def create_app(store=None, start_worker=True):
             if request.mode == "demo" and request.answer_source == "generate":
                 raise ValueError("Demo mode requires fixtures")
             with submission_lock:
+                if request.generator_prompts is not None:
+                    settings = settings.model_copy(update={"answer_prompts": request.generator_prompts.model_dump()})
                 if request.judge_selection != "configured" or request.generator_models or request.judge_models:
                     from supportjudge_api.model_selection import catalog, resolve
                     previous = store.latest_judges()
@@ -245,6 +248,18 @@ def create_app(store=None, start_worker=True):
 
     static = ROOT / "apps" / "web"
     app.mount("/static", StaticFiles(directory=static), name="static")
+
+    @app.get("/experiments")
+    def experiments_page():
+        return FileResponse(static / "experiments.html")
+
+    @app.get("/judges-pair")
+    def judges_pair_page():
+        return FileResponse(static / "judges-pair.html")
+
+    @app.get("/judge-comparison")
+    def judge_comparison_page():
+        return FileResponse(static / "judges.html")
 
     @app.get("/experiments/{run_id}")
     def experiment_page(run_id: str):

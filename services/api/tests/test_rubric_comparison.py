@@ -62,6 +62,9 @@ def test_api_queues_pinned_comparison_and_exposes_result(tmp_path,monkeypatch):
         response=client.post('/api/runs/'+run['id']+'/rubric-comparisons',json=change_for(run).model_dump())
         assert response.status_code==202
         cid=response.json()['id'];child=store.run(cid)
+        version=next(r for r in client.get('/api/experiments').json() if r['id']==cid)
+        assert version['baseline_id']==run['id']
+        assert version['rubric_name']==change_for(run).name
         assert client.get('/api/runs/'+cid+'/rubric-result').status_code==409
         report=deepcopy(run['report']);report['comparison']=child['request']['comparison']
         report['rows'][0]['points']['A']['scores']['faithfulness']=1

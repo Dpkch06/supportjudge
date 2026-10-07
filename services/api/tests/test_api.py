@@ -48,3 +48,22 @@ def test_live_dataset_listing_and_numbered_experiments(client):
     roles=client.get('/api/model-roles').json()
     assert len(roles['generators'])==2 and len(roles['judges'])==2
     assert client.post('/api/runs',json={'mode':'live','dataset':'demo'}).status_code==422
+
+
+def test_generator_prompts_are_pinned_for_new_experiments(tmp_path, monkeypatch):
+    monkeypatch.setenv('OPENROUTER_API_KEY','test-only')
+    monkeypatch.setenv('SUPPORTJUDGE_CONFIG','openrouter.json')
+    store=Store(tmp_path/'prompts.db')
+    client=TestClient(create_app(store,start_worker=False))
+    prompts={'A':'Use policy evidence and ask clarifying questions.','B':'Give a concise policy-grounded answer.'}
+    configured=client.get('/api/model-roles').json()['generator_prompts']
+    payload={'mode':'live','dataset':'support-v1','answer_source':'generate','generator_prompts':prompts}
+    response=client.post('/api/runs',json=payload)
+    assert response.status_code==202
+    saved=store.run(response.json()['id'])['request']['settings_snapshot']
+    assert saved['answer_prompts']==prompts
+    client.post('/api/runs',json={**payload,'generator_prompts':{'A':'Changed A','B':'Changed B'}})
+    assert store.run(response.json()['id'])['request']['settings_snapshot']==saved
+    assert client.get('/api/model-roles').json()['generator_prompts']==configured
+    for invalid in [{'A':'','B':'valid'},{'A':'  ','B':'valid'},{'A':'only one'}]:
+        assert client.post('/api/runs',json={**payload,'generator_prompts':invalid}).status_code==422

@@ -72,7 +72,9 @@ class Store:
     def experiments(self):
         with self.connection() as db:
             return [dict(r) for r in db.execute("""
-                SELECT id,state,created,ROW_NUMBER() OVER (ORDER BY rowid) AS number
+                SELECT id,state,created,ROW_NUMBER() OVER (ORDER BY rowid) AS number,
+                       json_extract(request,'$.comparison.baseline_id') AS baseline_id,
+                       json_extract(request,'$.comparison.name') AS rubric_name
                 FROM runs
                 WHERE json_extract(request,'$.parameters.mode')='live'
                   AND json_extract(request,'$.parameters.dataset')!='demo'
