@@ -1,0 +1,68 @@
+{
+  "version": "dropbox-individual-v1",
+  "retrieved": "2026-10-07",
+  "hash_scope": "SHA-256 of UTF-8 evidence paraphrase, not the full live webpage",
+  "dataset_sha256": "9e5e245861da513e7a1b97c48f5602582682a3060501f8f0e47366d0f02e4067",
+  "sources": [
+    {
+      "id": "cancel",
+      "url": "https://help.dropbox.com/plans/downgrade-dropbox-individual-plans",
+      "page_updated": "2023-10-10",
+      "retrieved": "2026-10-07",
+      "evidence_text": "Canceling Plus takes effect at the end of the current billing cycle, prevents renewal, and downgrades the account to Basic. This does not delete the account. Basic includes 2 GB. Over-limit accounts face restrictions and may lose owned files if they stay over the limit. Direct purchases use Manage account, Cancel plan, and confirmation prompts. Store purchases cancel through the store. Uninstalling or allowing a card to expire does not cancel the plan. Confirmation emails and a scheduled-downgrade notice verify cancellation. Mail cancellation takes longer and charges before processing are not refunded.",
+      "evidence_sha256": "ae22f9ca55cec47cfcd6bcb4fe9c21f2f333eccdf553884958c08811c603ba82",
+      "split": "development",
+      "source_notes": "Official help article opened and read using web retrieval. Paraphrase checked against the source; not a raw webpage archive."
+    },
+    {
+      "id": "refund",
+      "url": "https://help.dropbox.com/plans/refund",
+      "page_updated": "2025-10-29",
+      "retrieved": "2026-10-07",
+      "evidence_text": "Payments are generally nonrefundable. Residents of the EU, UK, or Turkey who cancel Plus within 14 days of purchase qualify for the stated exception and contact support to request a refund. Storefront purchases use that storefront for account-issue or billing-error refunds. Direct-debit refunds require contacting the bank, which alone can process the chargeback. A chargeback changes an individual subscription to Basic. Suspected billing errors and account issues use available support options.",
+      "evidence_sha256": "daf8bb1b9f33f334dce30c39b96622acab4f855872c12b444500f7c9b566f5ae",
+      "split": "development",
+      "source_notes": "Official help article opened and read using web retrieval. Paraphrase checked against the source; not a raw webpage archive."
+    },
+    {
+      "id": "billing",
+      "url": "https://help.dropbox.com/billing/find-credit-card-charge",
+      "page_updated": "2026-04-27",
+      "retrieved": "2026-10-07",
+      "evidence_text": "Credit-card charges appear with DROPBOX and a transaction ID. The lookup uses that ID to show the account email and payment date. PayPal and other payment methods cannot use this tool; contact support. Signed-out users may need the last four card digits and expiration date. If lookup fails, sign in and contact support in the same browser with the transaction ID. Banks may transfer payments from an expired card to its replacement. A finished trial may renew as a paid subscription. Basic is the free plan.",
+      "evidence_sha256": "c4085b4dc6d2b706e7186275cd9e96ce767889101b617901d1bda2118d670ebf",
+      "split": "development",
+      "source_notes": "Official help article opened and read using web retrieval. Paraphrase checked against the source; not a raw webpage archive."
+    },
+    {
+      "id": "recovery",
+      "url": "https://help.dropbox.com/delete-restore/recover-deleted-files-folders",
+      "page_updated": "2026-09-25",
+      "retrieved": "2026-10-07",
+      "evidence_text": "Basic and Plus have a standard 30-day recovery period, which add-ons may extend. Restore eligible items through Deleted files; they return to their original folder. Shared files require edit permission to restore. Support cannot recover permanently deleted files or files beyond available history. Existing overwritten files use version history. Missing files may be moved, renamed, unshared, or unsynced. Check the correct account, filters, and Events. Rewind supports Plus but Basic is not listed. Do not restart a slow restoration; inspect its status and contact support if stuck. Never send passwords or authentication codes to support.",
+      "evidence_sha256": "c7e77ac71e732659048c19c15e2ea935e15695410c558400f340ec0d358d5d08",
+      "split": "heldout",
+      "source_notes": "Official help article opened and read using web retrieval. Paraphrase checked against the source; not a raw webpage archive."
+    },
+    {
+      "id": "access",
+      "url": "https://help.dropbox.com/account-access/lost-email-access",
+      "page_updated": "2026-08-31",
+      "retrieved": "2026-10-07",
+      "evidence_text": "If you know the password but lack email access, sign in and update your email. A previously verified recovery email can receive security codes and password resets. An expired password with a linked device may use notification-based recovery; this is not a general bypass for a forgotten password. Without a logged-in device or email access, contact Dropbox and complete a security questionnaire; eligible assistance may defer codes or extend password expiry. If both password and email are lost, ask the email provider to recover email. Dropbox cannot restore the mailbox or contact the provider for you. Former-workplace email users contact the employer for codes. Dropbox cannot change the account email on your behalf for security reasons. A new account is not recovery of the old account.",
+      "evidence_sha256": "21191b34bc0e5845eb04f915c2812bee6bc5fc59964f6fcffb62343278ea51f0",
+      "split": "heldout",
+      "source_notes": "Official help article opened and read using web retrieval. Paraphrase checked against the source; not a raw webpage archive."
+    },
+    {
+      "id": "support",
+      "url": "https://help.dropbox.com/account-settings/customer-support-levels",
+      "page_updated": "2026-07-02",
+      "retrieved": "2026-10-07",
+      "evidence_text": "Sign in at dropbox.com/support to see options for your plan and account. Basic includes help center, community, and social support, but not regular email, live chat, or phone support. Plus includes email and chat but not phone support; Plus users first use the AI assistant to reach email or chat. Plus email response is within one business day Monday through Friday. Plus chat hours are local business hours, 9 am to 5 pm Monday through Friday. Help center and community are available at any time. Social support is English only. A team premium-support add-on is not an individual Plus entitlement.",
+      "evidence_sha256": "be7cf1c3dd9ae8aabdd8c11dd3b68c16be0f590b0a4cad664fe76b87a05cd25d",
+      "split": "heldout",
+      "source_notes": "Official help article opened and read using web retrieval. Paraphrase checked against the source; not a raw webpage archive."
+    }
+  ]
+}
