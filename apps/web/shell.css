@@ -1,0 +1,20 @@
+:root{--sidebar-width:60px;background:#fff;color:#242b30}
+body.sidebar-open{--sidebar-width:248px}
+#app-sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar-width);background:#f7f7f8;border-right:1px solid #e7e7e9;z-index:30;padding:12px 8px;box-sizing:border-box;transition:width .18s ease}
+#sidebar-toggle{width:42px;height:42px;display:grid;place-items:center;padding:0;color:#596267;background:transparent;border-radius:9px}
+#sidebar-toggle:hover{background:#e9eaeb}
+#sidebar-navigation{display:flex;flex-direction:column;gap:5px;margin-top:24px}
+#sidebar-navigation a{color:#41474c;text-decoration:none;border-radius:9px;padding:13px 14px;font-size:14px;white-space:nowrap}
+#sidebar-navigation a:hover{background:#ececee}
+#sidebar-navigation a[aria-current=page]{background:#e5ece9;color:#195d50;font-weight:650}
+body>header{height:66px;box-sizing:border-box;margin-left:var(--sidebar-width);padding:0 36px;background:#fff;border-bottom:1px solid #ededee;position:sticky;top:0;z-index:15}
+body>header>a:first-child{font-size:20px;color:#24332f;margin:0;font-weight:650;letter-spacing:-.5px}
+body>main{margin-left:var(--sidebar-width);max-width:none;padding:36px clamp(24px,4vw,64px);transition:margin-left .18s ease}
+body>footer{margin-left:var(--sidebar-width)}
+.new-experiment-page>.panel{max-width:1050px;margin:auto;padding:32px;border-radius:16px}
+.new-experiment-page h2{font-size:30px;letter-spacing:-.7px}
+#experiment{gap:20px}#experiment>label{min-width:0;flex:1 1 240px}#experiment select{width:100%;max-width:100%}#experiment textarea{box-sizing:border-box;line-height:1.6}
+#sidebar-backdrop{position:fixed;inset:0;background:#0005;z-index:25;border-radius:0;cursor:default}
+.saved-list{display:grid;gap:12px}.saved-experiment{display:flex;gap:16px;align-items:center;justify-content:space-between;border:1px solid #e0e6e3;padding:20px;border-radius:12px;color:inherit;text-decoration:none;background:#fff}.saved-experiment:hover{border-color:#72a496;background:#fafcfb}.saved-experiment strong{font-size:17px}.saved-experiment p{margin:6px 0 0;color:#68757b;font-size:13px}.page-title-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}button:focus-visible,a:focus-visible{outline:2px solid #19866e;outline-offset:3px}
+@media(max-width:760px){body.sidebar-open{--sidebar-width:60px}body.sidebar-open #app-sidebar{width:248px}body>header{padding:0 18px}body>main{padding:24px 16px}.new-experiment-page>.panel{padding:20px}.saved-experiment{align-items:flex-start}.intro h1{font-size:32px}}
+@media(prefers-reduced-motion:reduce){#app-sidebar,body>main{transition:none}}
