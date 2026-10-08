@@ -4,7 +4,7 @@ SupportJudge compares customer-support answers and tests how consistently LLM ju
 
 The project focuses on LLMOps: versioned evaluation inputs, judge calibration, answer-order bias checks, reproducible reports, model-call traces, and release-gate logic. It uses fictional questions based on Dropbox individual-account policies and is not affiliated with Dropbox.
 
-**Current release:** local application with 31 passing tests. A frozen configuration completed 30 held-out questions and 300 live model calls. Human review is implemented; independent calibration of that held-out run remains pending. No public deployment is currently published.
+**Current release:** [live on Railway](https://supportjudge-production.up.railway.app) with 31 passing tests. A frozen configuration completed 30 held-out questions and 300 live model calls. Human review is implemented; independent calibration of that held-out run remains pending. Deployment uses the integrated `deploy/railway` branch. See the [deployment guide](docs/railway-deployment.md).
 
 [Architecture](docs/architecture.md) · [Measurement report](reports/measurement-report.md) · [Dataset guide](docs/domain/dataset-guide.md) · [Team ownership](docs/team-distribution.md)
 
