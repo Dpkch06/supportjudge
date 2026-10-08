@@ -1,0 +1,687 @@
+{
+  "run_id": "c191bff6cdd247aaa4bfe94a82747bfa",
+  "split": "heldout",
+  "cases": 30,
+  "calls": 300,
+  "uncached_calls": 300,
+  "elapsed_seconds": 978.798,
+  "cases_per_minute": 1.8389902717414626,
+  "tokens": 260412,
+  "cost_usd": 0.011441413750000002,
+  "cost_per_case_usd": 0.00038138045833333343,
+  "call_latency_seconds": {
+    "p50": 3.0196,
+    "p95": 6.0849,
+    "p99": 7.1947
+  },
+  "per_case_provider_time_seconds": {
+    "p50": 32.2222,
+    "p95": 40.5565,
+    "p99": 42.575
+  },
+  "queue_wait_seconds": null,
+  "case_timings": [
+    {
+      "case_id": "recovery-01",
+      "provider_seconds": 39.44009519999963
+    },
+    {
+      "case_id": "recovery-02",
+      "provider_seconds": 35.071223100007046
+    },
+    {
+      "case_id": "recovery-03",
+      "provider_seconds": 30.274023200006923
+    },
+    {
+      "case_id": "recovery-04",
+      "provider_seconds": 33.18934160000936
+    },
+    {
+      "case_id": "recovery-05",
+      "provider_seconds": 32.34436049999931
+    },
+    {
+      "case_id": "recovery-06",
+      "provider_seconds": 33.953981500002556
+    },
+    {
+      "case_id": "recovery-07",
+      "provider_seconds": 43.02633639999112
+    },
+    {
+      "case_id": "recovery-08",
+      "provider_seconds": 34.41046060000372
+    },
+    {
+      "case_id": "recovery-09",
+      "provider_seconds": 32.76395849999244
+    },
+    {
+      "case_id": "recovery-10",
+      "provider_seconds": 29.666163300003973
+    },
+    {
+      "case_id": "access-01",
+      "provider_seconds": 31.917297800006054
+    },
+    {
+      "case_id": "access-02",
+      "provider_seconds": 30.261006599997927
+    },
+    {
+      "case_id": "access-03",
+      "provider_seconds": 35.000129299995024
+    },
+    {
+      "case_id": "access-04",
+      "provider_seconds": 32.10012400000414
+    },
+    {
+      "case_id": "access-05",
+      "provider_seconds": 28.894006299997272
+    },
+    {
+      "case_id": "access-06",
+      "provider_seconds": 30.75708150000719
+    },
+    {
+      "case_id": "access-07",
+      "provider_seconds": 33.4863516000114
+    },
+    {
+      "case_id": "access-08",
+      "provider_seconds": 32.99355700000888
+    },
+    {
+      "case_id": "access-09",
+      "provider_seconds": 30.613478100000066
+    },
+    {
+      "case_id": "access-10",
+      "provider_seconds": 25.272716299987223
+    },
+    {
+      "case_id": "support-01",
+      "provider_seconds": 27.941196599997056
+    },
+    {
+      "case_id": "support-02",
+      "provider_seconds": 31.58408459999191
+    },
+    {
+      "case_id": "support-03",
+      "provider_seconds": 27.288753100001486
+    },
+    {
+      "case_id": "support-04",
+      "provider_seconds": 27.95119230000273
+    },
+    {
+      "case_id": "support-05",
+      "provider_seconds": 34.09559189998981
+    },
+    {
+      "case_id": "support-06",
+      "provider_seconds": 29.392624199994316
+    },
+    {
+      "case_id": "support-07",
+      "provider_seconds": 34.06201139998302
+    },
+    {
+      "case_id": "support-08",
+      "provider_seconds": 31.45932520000497
+    },
+    {
+      "case_id": "support-09",
+      "provider_seconds": 41.46995020000759
+    },
+    {
+      "case_id": "support-10",
+      "provider_seconds": 34.5271173000001
+    }
+  ],
+  "models": {
+    "anthropic/claude-haiku-4.5": {
+      "calls": 120,
+      "tokens": 128398,
+      "cost_usd": 0,
+      "zero_cost_calls": 120,
+      "latency_seconds": {
+        "p50": 2.93,
+        "p95": 3.6262,
+        "p99": 3.7752
+      }
+    },
+    "google/gemini-2.5-flash": {
+      "calls": 30,
+      "tokens": 8704,
+      "cost_usd": 0,
+      "zero_cost_calls": 30,
+      "latency_seconds": {
+        "p50": 1.3748,
+        "p95": 1.7854,
+        "p99": 1.8132
+      }
+    },
+    "mistralai/mistral-small-3.2-24b-instruct": {
+      "calls": 120,
+      "tokens": 113668,
+      "cost_usd": 0.011441413750000002,
+      "zero_cost_calls": 0,
+      "latency_seconds": {
+        "p50": 4.0825,
+        "p95": 6.6596,
+        "p99": 7.5628
+      }
+    },
+    "openai/gpt-4.1-mini": {
+      "calls": 30,
+      "tokens": 9642,
+      "cost_usd": 0,
+      "zero_cost_calls": 30,
+      "latency_seconds": {
+        "p50": 1.9392,
+        "p95": 3.1168,
+        "p99": 3.4141
+      }
+    }
+  },
+  "submission": {
+    "scope": "Loopback HTTP POST /api/runs, real validation and SQLite writes, five concurrent clients, worker disabled, disposable DB. Excludes model execution and queue drain.",
+    "requests": 100,
+    "concurrency": 5,
+    "errors": 0,
+    "p50_seconds": 0.0319,
+    "p95_seconds": 0.0486,
+    "p99_seconds": 0.0517,
+    "wall_seconds_including_batch_cleanup": 1.1088431000025594,
+    "observations": [
+      {
+        "seconds": 0.016724900000554044,
+        "status": 202
+      },
+      {
+        "seconds": 0.024834600000758655,
+        "status": 202
+      },
+      {
+        "seconds": 0.03190579999500187,
+        "status": 202
+      },
+      {
+        "seconds": 0.0381548000004841,
+        "status": 202
+      },
+      {
+        "seconds": 0.04501120000350056,
+        "status": 202
+      },
+      {
+        "seconds": 0.01807340000232216,
+        "status": 202
+      },
+      {
+        "seconds": 0.0417027999938,
+        "status": 202
+      },
+      {
+        "seconds": 0.02521040000283392,
+        "status": 202
+      },
+      {
+        "seconds": 0.04881860000023153,
+        "status": 202
+      },
+      {
+        "seconds": 0.032081400000606664,
+        "status": 202
+      },
+      {
+        "seconds": 0.03437610000401037,
+        "status": 202
+      },
+      {
+        "seconds": 0.04141900000104215,
+        "status": 202
+      },
+      {
+        "seconds": 0.016111900004034396,
+        "status": 202
+      },
+      {
+        "seconds": 0.024483399996825028,
+        "status": 202
+      },
+      {
+        "seconds": 0.04777139999350766,
+        "status": 202
+      },
+      {
+        "seconds": 0.047001999999338295,
+        "status": 202
+      },
+      {
+        "seconds": 0.03923699999722885,
+        "status": 202
+      },
+      {
+        "seconds": 0.02287129999604076,
+        "status": 202
+      },
+      {
+        "seconds": 0.03056040000228677,
+        "status": 202
+      },
+      {
+        "seconds": 0.01399449999735225,
+        "status": 202
+      },
+      {
+        "seconds": 0.016866700003447477,
+        "status": 202
+      },
+      {
+        "seconds": 0.0426316000011866,
+        "status": 202
+      },
+      {
+        "seconds": 0.04959019999660086,
+        "status": 202
+      },
+      {
+        "seconds": 0.0341547000061837,
+        "status": 202
+      },
+      {
+        "seconds": 0.02593899999919813,
+        "status": 202
+      },
+      {
+        "seconds": 0.024762400003965013,
+        "status": 202
+      },
+      {
+        "seconds": 0.016949099997873418,
+        "status": 202
+      },
+      {
+        "seconds": 0.0468101000005845,
+        "status": 202
+      },
+      {
+        "seconds": 0.03149149999808287,
+        "status": 202
+      },
+      {
+        "seconds": 0.03892549999727635,
+        "status": 202
+      },
+      {
+        "seconds": 0.014909000004990958,
+        "status": 202
+      },
+      {
+        "seconds": 0.031984699999156874,
+        "status": 202
+      },
+      {
+        "seconds": 0.03932409999833908,
+        "status": 202
+      },
+      {
+        "seconds": 0.023444200000085402,
+        "status": 202
+      },
+      {
+        "seconds": 0.047093799999856856,
+        "status": 202
+      },
+      {
+        "seconds": 0.028938100003870204,
+        "status": 202
+      },
+      {
+        "seconds": 0.037192900002992246,
+        "status": 202
+      },
+      {
+        "seconds": 0.021147399995243177,
+        "status": 202
+      },
+      {
+        "seconds": 0.0435356000016327,
+        "status": 202
+      },
+      {
+        "seconds": 0.013255500001832843,
+        "status": 202
+      },
+      {
+        "seconds": 0.015157499998167623,
+        "status": 202
+      },
+      {
+        "seconds": 0.030818899998848792,
+        "status": 202
+      },
+      {
+        "seconds": 0.03922640000382671,
+        "status": 202
+      },
+      {
+        "seconds": 0.045911000001069624,
+        "status": 202
+      },
+      {
+        "seconds": 0.022408599994378164,
+        "status": 202
+      },
+      {
+        "seconds": 0.01591779999580467,
+        "status": 202
+      },
+      {
+        "seconds": 0.02343010000186041,
+        "status": 202
+      },
+      {
+        "seconds": 0.03127859999949578,
+        "status": 202
+      },
+      {
+        "seconds": 0.04862210000283085,
+        "status": 202
+      },
+      {
+        "seconds": 0.039743599998473655,
+        "status": 202
+      },
+      {
+        "seconds": 0.03289970000332687,
+        "status": 202
+      },
+      {
+        "seconds": 0.024691600003279746,
+        "status": 202
+      },
+      {
+        "seconds": 0.01717540000390727,
+        "status": 202
+      },
+      {
+        "seconds": 0.047343599995656405,
+        "status": 202
+      },
+      {
+        "seconds": 0.03918300000077579,
+        "status": 202
+      },
+      {
+        "seconds": 0.024258000004920177,
+        "status": 202
+      },
+      {
+        "seconds": 0.038790099999459926,
+        "status": 202
+      },
+      {
+        "seconds": 0.016037499997764826,
+        "status": 202
+      },
+      {
+        "seconds": 0.03054580000025453,
+        "status": 202
+      },
+      {
+        "seconds": 0.0453821000046446,
+        "status": 202
+      },
+      {
+        "seconds": 0.01549660000455333,
+        "status": 202
+      },
+      {
+        "seconds": 0.037936699998681433,
+        "status": 202
+      },
+      {
+        "seconds": 0.045441100002790336,
+        "status": 202
+      },
+      {
+        "seconds": 0.022580400000151712,
+        "status": 202
+      },
+      {
+        "seconds": 0.03006230000028154,
+        "status": 202
+      },
+      {
+        "seconds": 0.046346600000106264,
+        "status": 202
+      },
+      {
+        "seconds": 0.038637500001641456,
+        "status": 202
+      },
+      {
+        "seconds": 0.030588800000259653,
+        "status": 202
+      },
+      {
+        "seconds": 0.022212500000023283,
+        "status": 202
+      },
+      {
+        "seconds": 0.01383720000012545,
+        "status": 202
+      },
+      {
+        "seconds": 0.046196299997973256,
+        "status": 202
+      },
+      {
+        "seconds": 0.016012699998100288,
+        "status": 202
+      },
+      {
+        "seconds": 0.030608000000938773,
+        "status": 202
+      },
+      {
+        "seconds": 0.037459599996509496,
+        "status": 202
+      },
+      {
+        "seconds": 0.02184540000598645,
+        "status": 202
+      },
+      {
+        "seconds": 0.023264700001163874,
+        "status": 202
+      },
+      {
+        "seconds": 0.016024999997171108,
+        "status": 202
+      },
+      {
+        "seconds": 0.03825379999761935,
+        "status": 202
+      },
+      {
+        "seconds": 0.030875600001309067,
+        "status": 202
+      },
+      {
+        "seconds": 0.04571549999673152,
+        "status": 202
+      },
+      {
+        "seconds": 0.044478399999206886,
+        "status": 202
+      },
+      {
+        "seconds": 0.03676170000107959,
+        "status": 202
+      },
+      {
+        "seconds": 0.051681500000995584,
+        "status": 202
+      },
+      {
+        "seconds": 0.028843699998105876,
+        "status": 202
+      },
+      {
+        "seconds": 0.05850250000366941,
+        "status": 202
+      },
+      {
+        "seconds": 0.0426073999988148,
+        "status": 202
+      },
+      {
+        "seconds": 0.024063000004389323,
+        "status": 202
+      },
+      {
+        "seconds": 0.0503582000019378,
+        "status": 202
+      },
+      {
+        "seconds": 0.016025199998694006,
+        "status": 202
+      },
+      {
+        "seconds": 0.031950899996445514,
+        "status": 202
+      },
+      {
+        "seconds": 0.03199049999966519,
+        "status": 202
+      },
+      {
+        "seconds": 0.039717100000416394,
+        "status": 202
+      },
+      {
+        "seconds": 0.04747969999880297,
+        "status": 202
+      },
+      {
+        "seconds": 0.015545599999313708,
+        "status": 202
+      },
+      {
+        "seconds": 0.022916299996722955,
+        "status": 202
+      },
+      {
+        "seconds": 0.03309629999421304,
+        "status": 202
+      },
+      {
+        "seconds": 0.025766600003407802,
+        "status": 202
+      },
+      {
+        "seconds": 0.04860709999775281,
+        "status": 202
+      },
+      {
+        "seconds": 0.017014299999573268,
+        "status": 202
+      },
+      {
+        "seconds": 0.04097129999718163,
+        "status": 202
+      }
+    ]
+  },
+  "leaderboard": [
+    {
+      "judge": "anthropic/claude-haiku-4.5",
+      "system": "A",
+      "mean_score": 3.958,
+      "score_interval": [
+        3.875,
+        4
+      ],
+      "wins": 17,
+      "ties": 7,
+      "cases": 30
+    },
+    {
+      "judge": "anthropic/claude-haiku-4.5",
+      "system": "B",
+      "mean_score": 3.9,
+      "score_interval": [
+        3.8417,
+        3.9583
+      ],
+      "wins": 3,
+      "ties": 7,
+      "cases": 30
+    },
+    {
+      "judge": "mistralai/mistral-small-3.2-24b-instruct",
+      "system": "A",
+      "mean_score": 3.983,
+      "score_interval": [
+        3.9583,
+        4
+      ],
+      "wins": 7,
+      "ties": 13,
+      "cases": 30
+    },
+    {
+      "judge": "mistralai/mistral-small-3.2-24b-instruct",
+      "system": "B",
+      "mean_score": 3.933,
+      "score_interval": [
+        3.875,
+        3.975
+      ],
+      "wins": 0,
+      "ties": 13,
+      "cases": 30
+    }
+  ],
+  "calibration": [
+    {
+      "judge": "anthropic/claude-haiku-4.5",
+      "human_labels": 0,
+      "agreement": null,
+      "false_acceptance": null,
+      "false_rejection": null,
+      "unacceptable_labels": 0,
+      "acceptable_labels": 0,
+      "pair_agreement": null,
+      "order_consistency": 0.8,
+      "paired_delta_B_minus_A": -0.0583,
+      "paired_delta_interval": [
+        -0.125,
+        0.025
+      ]
+    },
+    {
+      "judge": "mistralai/mistral-small-3.2-24b-instruct",
+      "human_labels": 0,
+      "agreement": null,
+      "false_acceptance": null,
+      "false_rejection": null,
+      "unacceptable_labels": 0,
+      "acceptable_labels": 0,
+      "pair_agreement": null,
+      "order_consistency": 0.6666666666666666,
+      "paired_delta_B_minus_A": -0.05,
+      "paired_delta_interval": [
+        -0.1,
+        -0.0083
+      ]
+    }
+  ]
+}
