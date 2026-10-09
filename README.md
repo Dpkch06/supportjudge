@@ -1,149 +1,191 @@
 # SupportJudge
 
-SupportJudge will compare AI customer-support answer configurations and measure how reliably LLM judges evaluate them. It will produce a leaderboard, inspectable evidence, and a release decision based on versioned rules.
+SupportJudge compares customer-support answers and tests how consistently LLM judges evaluate them. It generates two answers from the same question and policy evidence, asks two separate judges to score them, and preserves the decisions for inspection. Rubric experiments reuse those answers so a rubric edit can be evaluated without regenerating them.
 
-**Status:** Scope and repository structure only. The application, datasets, metrics, and deployment are not implemented. No performance results are claimed.
+The project focuses on LLMOps: versioned evaluation inputs, judge calibration, answer-order bias checks, reproducible reports, model-call traces, and release-gate logic. It uses fictional questions based on Dropbox individual-account policies and is not affiliated with Dropbox.
 
-## Problem and objective
+**Current release:** [live on Railway](https://supportjudge-production.up.railway.app) with 31 passing tests. A frozen configuration completed 30 held-out questions and 300 live model calls. Human review is implemented; independent calibration of that held-out run remains pending. Deployment uses the integrated `deploy/railway` branch. See the [deployment guide](docs/railway-deployment.md).
 
-A prompt change can produce a fluent but incorrect refund promise. An unreliable evaluator can miss that error. Our objective is to detect answer regressions while checking that the evaluator agrees with human reviewers.
+[Architecture](docs/architecture.md) · [Measurement report](reports/measurement-report.md) · [Dataset guide](docs/domain/dataset-guide.md) · [Team ownership](docs/team-distribution.md)
 
-The evaluation input is a customer question, official policy evidence, candidate answers, and a scoring rubric. Outputs are dimension scores, accept/reject verdicts, pairwise preferences, evidence references, disagreements, and a release report.
+## What the app does
 
-An answer system generates responses. A judge scores them. A release policy decides whether measured results permit promotion. These configurations are versioned separately.
-
-## Domain and boundaries
-
-Customer support is the agreed domain. Dropbox individual Basic and Plus accounts are the proposed first policy collection. Cover cancellation, refunds, billing, recovery, account security, and available support channels. Record country, plan, purchase channel, dates, and permissions where relevant.
-
-Customer support gives reviewers understandable questions and documented exceptions. ML incident troubleshooting requires more specialist judgment; broad documentation Q&A can distract the project into retrieval engineering. Our contribution is the evaluation framework.
-
-Use English, fictional customer identities, and a frozen collection of official source passages. Supply the same relevant passages directly to answer systems and judges. Exclude model training, autonomous account actions, real customer credentials, team administration, enterprise contracts, arbitrary uploads, retrieval engineering, and billing for our own users.
-
-Policy sources include [refunds](https://help.dropbox.com/plans/refund), [cancellation](https://help.dropbox.com/plans/downgrade-dropbox-individual-plans), [recovery](https://help.dropbox.com/delete-restore/recover-deleted-files-folders), and [support options](https://help.dropbox.com/account-settings/customer-support-levels). Freeze passages with URL, retrieval date, visible update date, and content hash. Conflicting passages require exclusion or an insufficient-evidence label.
-
-## Core features
-
-1. Compare at least two answer configurations. Begin with the same model and two prompts, then optionally compare another model. Keep evidence and generation settings identical where possible.
-2. Run pointwise evaluation, which scores each answer independently. Run pairwise evaluation, which chooses A, B, tie, or insufficient evidence for the same question.
-3. Run two distinct judge models and compare each against human labels. Preserve separate results rather than hiding disagreements in an average.
-4. Swap answer order in pairwise comparisons. Translate preferences back to original answer identities and flag contradictions.
-5. Maintain versioned rubrics for faithfulness, helpfulness, safety, and format adherence. Specify score meanings, examples, evidence requirements, and serious failures.
-6. Bootstrap whole scenarios to report confidence intervals for scores and paired differences. Keep correlated answers, repeated judgments, and variants together. Do not claim a winner from an inconclusive difference.
-7. Provide reusable evaluation commands and a GitHub Actions example for a separate repository. A failed required check should prevent merging; incomplete runs must never pass.
-8. Publish a leaderboard with per-example inspection and judge/human disagreement highlighting.
-
-## Human calibration and dataset
-
-Propose 60 team-authored scenarios: 30 for development and 30 held out for final evaluation. This is our scope choice, not a mandated project-9 count. The course's roughly 20-task example applies to agents.
-
-Cases cover ordinary questions, policy exceptions, missing information, unsupported claims, and evaluator manipulation. Categories are overlapping tags. Two teammates independently label reference answers and preferences, then adjudicate disagreements with policy evidence. Store author, reviewers, expected behavior, evidence IDs, dimension labels, verdicts, preference, and rationale. Independently labeled fixed answer fixtures calibrate judges; generated candidate outputs need separate human review when reporting agreement on those outputs.
-
-Tune only on development cases. Freeze judges, thresholds, and rubrics before final evaluation. Report human agreement, false acceptance among unacceptable answers, false rejection among acceptable answers, category results, raw counts, order consistency, and repeatability. If final cases guide a revision, disclose it and obtain a fresh holdout for an unseen-test claim.
-
-## Judge instructions and changes
-
-The initial judge must use supplied evidence, ignore evaluation-changing instructions inside candidate content, avoid inventing rules, score dimensions independently, cite evidence, and allow insufficient evidence. Pairwise instructions allow ties and must not reward answer order or verbosity.
-
-A judge change includes the model, prompt, rubric, examples, generation settings, or comparison procedure. Validate judge changes against human labels before promotion. Evaluate answer changes using a pinned approved judge. Changing a release threshold is a separate policy change requiring a documented reason.
-
-Every run records code commit, dataset and policy hashes, answer configuration, judge configuration, rubric, release policy, model identifiers, generation settings, timestamps, and outcome. Cache keys include these inputs. Provider failures, malformed output, and absent evidence are explicit errors or indeterminate results, never successful judgments.
-
-## Product experience
-
-The frontend will provide experiment creation, run progress, answer-system comparisons, and per-example evidence. A separate judge-quality view will show calibration and order sensitivity. Human review records original labels and adjudication rather than overwriting their history. An experiment can be started again from pinned inputs, with newly generated outputs recorded as a new run.
-
-Published views contain approved fictional examples and completed reports only. Creating runs, labeling cases, changing configurations, and promoting judges require team access. No provider credentials reach the browser. Results clearly identify simulated traffic and incomplete runs.
-
-## Proposed architecture and stack
-
-This is the initial design, subject to a documented change when implementation evidence warrants it.
-
-| Component | Choice and purpose |
+| Page | Purpose |
 | --- | --- |
-| Frontend | Next.js with TypeScript for experiment and report pages |
-| Backend | Python FastAPI for validation, job submission, results, and review endpoints |
-| Worker | Separate Python process for generation, judging, statistics, and reports |
-| Storage | PostgreSQL for durable jobs, version references, labels, and results |
-| Job processing | PostgreSQL job table with transactional claims, leases, bounded concurrency, and retry limits |
-| Model access | Hosted APIs through small provider adapters; model IDs remain configurable |
-| Tracing | Langfuse for generation/judge spans, tokens, latency, and cost |
-| CI | GitHub Actions for tests, configuration validation, and controlled evaluation runs |
-| Deployment | Docker images for web/API/worker; hosting provider selected after a working vertical slice |
+| New experiment | Choose two generators and two judges, edit generator prompts, select a dataset split, and start an evaluation. Judges can be chosen manually or rotated automatically. |
+| Experiments | Browse saved runs and inspect answers, policy evidence, scores, verdicts, preferences, and explanations. Open a run to edit its saved rubric and create a separate rubric version. |
+| Compare judges | Compare the two judges within one experiment. |
+| Compare rubric versions | Match each judge across an original experiment and its revised-rubric version, using the same answers and evidence. |
+| Human review | Collect blind reviews, finalize human decisions, and measure each judge's agreement with those decisions. |
+| API reference | Explore the FastAPI endpoints at `/docs`. |
 
-No Redis, vector database, or Kubernetes is needed initially. A database job queue avoids another service at course scale. Claims and retries must be idempotent; provider calls can still incur duplicate charges after ambiguous failures, which must be tracked rather than assumed impossible.
+Generators write the answers. Judges evaluate both answers; they are not paired one-to-one with generators. Model selection excludes the exact generator model IDs from the chosen judges.
+
+## Architecture
 
 ```mermaid
 flowchart LR
-  UI[Frontend] -->|HTTPS JSON, synchronous| API[FastAPI]
-  CI[CLI or GitHub Actions] -->|HTTPS JSON, synchronous| API
-  API -->|Create job and return ID| DB[(PostgreSQL)]
-  W[Worker] -->|Claim jobs asynchronously| DB
-  W -->|HTTPS model requests| M[Answer and judge providers]
-  W -->|Store scores and reports| DB
-  W -->|Export traces| T[Langfuse]
-  API -->|Read completed reports| DB
+    Browser[Browser: HTML, CSS, JavaScript]
+    Files[Versioned datasets, policies, prompts and rubrics]
+    subgraph App[One Python application process]
+        API[FastAPI: static pages and JSON API]
+        Worker[Single background worker thread]
+        Engine[Evaluation engine and statistics]
+    end
+    DB[(SQLite: jobs, snapshots, cache, reports and reviews)]
+    Router[OpenRouter API]
+    Models[Two generators and two judges]
+    Browser -->|Submit, poll, inspect and review| API
+    API -->|Load and validate| Files
+    API -->|Persist jobs and reviews; read reports| DB
+    Worker -->|Claim pending jobs| DB
+    Worker --> Engine
+    Engine -->|Look up and store call cache| DB
+    Engine -->|HTTPS model calls| Router
+    Router --> Models
+    Worker -->|Save results and traces| DB
 ```
 
-The API validates dataset/configuration references and returns a job ID. The worker generates candidate answers, judges them, aggregates scores, and stores the report. Clients poll job state. Core endpoints will cover runs, configurations, datasets, reports, annotations, and judge promotion. Exact schemas will be agreed before implementation.
+FastAPI serves the frontend and API. One worker thread processes queued jobs sequentially. SQLite stores the jobs, exact input snapshots, cached responses, completed reports, and human reviews. The evaluation engine validates structured judge output and computes statistics. See the [architecture document](docs/architecture.md) for request flow, failure handling, and design trade-offs.
 
-## LLMOps and release process
+## Run locally
 
-Run offline evaluation before releases. Compare a new judge in shadow mode with the approved judge on demo traffic, inspect disagreement, then promote explicitly. Restore the previous pinned judge configuration and container image to roll back. Full automatic canary promotion is outside the initial scope.
+Requires Python 3.11 or later, internet access, and an OpenRouter API key. Run commands from the repository root containing all workstreams.
 
-Sample live demo answers for asynchronous judging and human review. Monitor operational latency/errors/queue age, input categories and lengths, output validity, and labeled quality disagreement. Compare category distributions over time as a limited drift signal, not proof of model drift. Review newly found failures before adding them to a later dataset version.
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -e '.[dev]'
+Copy-Item .env.example .env
+```
 
-Run ordinary tests without paid model calls. Paid CI evaluation uses a manually dispatched or trusted internal workflow with secrets; untrusted fork code must not receive credentials. Store reports as artifacts and expose a named required evaluation check. Judge changes and answer changes use separate checks.
+Set these values in the local `.env` file:
 
-## Acceptance targets and measurements
+```dotenv
+OPENROUTER_API_KEY=your-key-here
+SUPPORTJUDGE_CONFIG=openrouter.json
+```
 
-These are initial targets, not results. Quality thresholds will be justified on development data before final testing.
+Start the app:
 
-| Measure | Initial target |
+```powershell
+python -m supportjudge_cli.cli serve --port 8017
+```
+
+Open <http://127.0.0.1:8017>. API documentation is at <http://127.0.0.1:8017/docs>. No Node build or team token is required. The app loads `.env` automatically, and Git ignores it. Saved experiments live in `work/supportjudge.db`, which Git also ignores. A fresh checkout starts with an empty experiment list.
+
+This is a local, unauthenticated application. Reviewer names are self-declared. Public read/write hosting would require access controls. Use one application worker; multiple worker processes are not supported by the current job lifecycle.
+
+The six workstream branches are currently separate and unmerged. Each contains its assigned component, not a standalone runnable app. The assembled local working copy contains all components; teammates should follow the handoff instructions when integrating their branches.
+
+## Evaluation method
+
+Each question supplies the same policy evidence to both generators and judges. Each judge performs four calls:
+
+1. Score answer A independently on faithfulness, helpfulness, safety, and format adherence, each from 0 to 4, and return accept, reject, or insufficient evidence.
+2. Score answer B in the same way.
+3. Compare A with B and choose A, B, tie, or insufficient evidence.
+4. Repeat the comparison with answer order reversed. Map the result back to the original answers and flag changed preferences.
+
+With two generators and two judges, a new question requires ten model calls before caching. A rubric rerun needs eight judge calls per question and reuses the saved answers. Generator-prompt edits apply to new experiments only. Rubric edits apply equally to both judges in the new rubric version.
+
+The report includes per-judge mean scores, paired score differences, and 95% bootstrap intervals using 1,000 question-level resamples with seed 42. Questions within a policy family are related; the intervals do not model that clustering or uncertainty across repeated model runs.
+
+### Dataset and provenance
+
+The versioned support dataset contains 60 scenarios:
+
+| Split | Questions | Policy families |
+| --- | --- | --- |
+| Development | 30 | Cancellation, refunds, billing |
+| Held out | 30 | Recovery, account access, support channels |
+
+Evidence includes source URLs, retrieval dates, and provenance. The supplied scenarios and provisional reference labels are AI-authored. They do not establish handwritten dataset authorship or independent human calibration. The team owns the remaining handwritten evaluation-set evidence. See the [policy manifest](data/policies/manifest.json) and [dataset guide](docs/domain/dataset-guide.md).
+
+Generated answers start unreviewed. The held-out results have now been inspected; future tuning on them cannot be presented as validation on an unseen set.
+
+### Human review
+
+Two people independently review the same saved answers under their own names. The blind page displays anonymous X/Y answers without judge verdicts or other reviewers' labels. The adjudication page aligns those answers to A/B, shows the original submissions, and records final verdicts, a preferred answer, and a reason. It does not require another username or choose a majority verdict automatically.
+
+Judge agreement compares the saved AI decisions with the final human decisions for that exact experiment:
+
+- Verdict agreement measures matching accept/reject decisions.
+- Preference agreement measures matching choices of the better answer.
+- False acceptance is the fraction of human-rejected answers accepted by a judge.
+- False rejection is the fraction of human-accepted answers rejected by a judge.
+
+Original reviews remain stored. Names do not authenticate reviewers or prove independence. Human-review metrics do not retroactively change an experiment report or approve a release.
+
+## Measured results
+
+Experiment 8 used GPT-4.1 mini and Gemini 2.5 Flash as generators, with Claude Haiku 4.5 and Mistral Small 3.2 as judges. The configuration was frozen from Experiment 5 before the held-out evaluation. Generator prompts differ, so these results compare answer configurations rather than model identity alone.
+
+| Measurement | Observed result |
 | --- | --- |
-| API job submission | p95 below 500 ms at five concurrent submissions |
-| Single-example evaluation | p95 below 60 seconds with two judges and swapped pairwise comparisons; excludes queue wait, which is reported separately |
-| Pointwise verdict agreement | At least 85% against adjudicated held-out human labels |
-| False acceptance | At most 10% among human-labeled unacceptable answers |
-| Traceability | All completed runs identify their inputs and configuration versions |
-| Invalid/incomplete evaluations | Zero automatic successful release decisions |
-| CI demonstration | A documented policy regression fails a required evaluation check |
+| Held-out questions / live calls / cache hits | 30 / 300 / 0 |
+| Failed calls in this completed run | 0 |
+| Total evaluation time | 978.8 seconds, about 16.3 minutes |
+| Evaluation throughput | 1.839 questions per minute |
+| Model-call latency p50 / p95 / p99 | 3.02 / 6.08 / 7.19 seconds |
+| Per-question provider time p50 / p95 / p99 | 32.22 / 40.56 / 42.58 seconds |
+| Tokens | 260,412 |
+| Recorded API cost / cost per question | $0.011441 / $0.000381 |
+| Submission benchmark | 100 requests, five concurrent clients, zero errors |
+| Submission latency p50 / p95 / p99 | 31.9 / 48.6 / 51.7 ms |
 
-Publish p50/p99, provider and queue latency, error rates, throughput, sample counts, token usage, cost per evaluated case, and total experiment cost. Distinguish simulated-provider load tests from real-API measurements. A missed target is a reported finding, not a reason to conceal results.
+The submission benchmark uses real HTTP validation and SQLite writes in a disposable local instance with model execution disabled. Evaluation throughput comes from the live single-worker run. Per-question provider time sums sequential model calls and excludes local processing; exact queue wait and full end-to-end per-question latency were not instrumented.
 
-## Planned repository layout
+**Cost limitation:** Claude, Gemini, and GPT responses recorded zero cost despite nonzero token usage. The table preserves those reported values; it is not a reliable account-wide bill.
 
-Directory README files are placeholders explaining ownership. They contain no runnable implementation.
+| Judge | A mean score / 4 | B mean score / 4 | Swapped-order consistency |
+| --- | --- | --- | --- |
+| Claude Haiku 4.5 | 3.958 | 3.900 | 80.0% |
+| Mistral Small 3.2 | 3.983 | 3.933 | 66.7% |
 
-```text
-apps/web/                 Frontend
-services/api/             HTTP API and team access
-services/worker/          Background job runner
-packages/evaluation/      Rubrics, judging, statistics, release decisions
-configs/                  Versioned answer, judge, and release configuration
-data/policies/            Source manifest and reviewed policy passages
-data/evals/               Human-authored cases and split manifest
-docs/                     Ownership, decisions, and setup guides
-reports/                  Approved evaluation summaries
-tests/                    Behavior and integration tests
-.github/workflows/        CI to be added after commands exist
+High scores do not establish judge accuracy. Both judges sometimes changed preference when answer order changed. Independent human review of this run is still needed. Full intervals, limitations, and raw-data references are in the [measurement report](reports/measurement-report.md).
+
+## Observability and reproducibility
+
+Observability is implemented through saved traces and reports. Each completed run records model IDs, call latency, tokens, cost, cache hits, elapsed time, scores, explanations, configuration snapshots, dataset/settings hashes, Git revision, and an implementation hash. Cache hits record zero additional tokens and cost.
+
+Inspect a run's `report.traces`, `report.metrics`, and `report.versions` through `GET /api/runs/{id}` or the downloadable experiment report. `GET /api/observability` summarizes the latest 100 runs, including job states, elapsed-time percentiles, token counts, and judge disagreements. Its category-shift statistic is descriptive, not a validated drift detector.
+
+The [raw held-out run](reports/heldout-measurement-run.json), [measurement totals](reports/final-measurements.json), and [submission observations](reports/submission-measurements.json) are included as evidence. Traces are stored locally; there is no Langfuse service or alerting pipeline. Failed runs preserve an error state, but partial failed-call costs are not fully captured in completed reports.
+
+Snapshots support auditing, not identical future outputs. Providers control model revisions and default sampling behavior.
+
+## Tests, CLI and CI
+
+```powershell
+python -m pytest -q
+python -m supportjudge_cli.cli evaluate --dataset support-v1 --split development --answers generate --output reports/live.json
 ```
 
-## Setup and milestones
+The 31 tests cover evaluation behavior, provider response validation, API workflows, rubric comparisons, model selection, and human review. Tests use controlled test doubles and temporary databases without paid calls. The application and CLI run live models.
 
-There is no runnable application yet. Clone the repository and read [team distribution](docs/team-distribution.md) before choosing work. Dependencies, environment variables, and exact commands will be added alongside working code, not as speculative setup instructions.
+The CLI also accepts `--config measurement-v1` to use the frozen measured configuration. A new live evaluation may incur charges or reuse cached calls. To recreate the summary from the original local run:
 
-1. Assign owners; freeze a small policy subset; define data contracts and rubric anchors.
-2. Author and independently label a 10-scenario development pilot; run two baseline judges.
-3. Build one vertical slice that accepts pinned inputs, runs evaluations, and returns an inspectable report.
-4. Expand the dataset, implement statistics and human review, add reusable CI integration.
-5. Add online monitoring, shadow judge comparison, rollback, and publish the leaderboard.
-6. Freeze final configurations, run held-out evaluation and load tests, report results, rehearse the presentation.
+```powershell
+python infra/report_measurements.py c191bff6cdd247aaa4bfe94a82747bfa
+```
 
-## Course deliverables
+That command requires the original SQLite run and saved submission measurements. The committed JSON evidence remains readable without the database. `python infra/measure_submission.py` reruns the isolated submission benchmark on port 8019.
 
-Submit a public repository, setup guide, versioned evaluation set and scoring method, measured README results, observability evidence, CI regression demonstration, leaderboard, and a two- or three-sentence resume description using actual results. The general checklist makes live application deployment optional; project 9 recommends a public leaderboard, which we plan to publish.
+GitHub Actions includes a test workflow and a manually dispatched remote-evaluation example. The CLI's `--gate` option exits with failure when calibration or regression checks are unmet. These checks have not been demonstrated as a required GitHub merge gate. The current measured run does not pass release approval. Promotion/activation endpoints exist, but calibrated promotion and deployment rollback have not been validated end to end.
 
-The presentation is 15 minutes plus 5 minutes Q&A. Weights are framing 20%, architecture 30%, LLMOps depth 20%, trade-offs 20%, and presentation 10%. Each member should explain a decision and its evidence. Required peer reviews must be authored by the team from observed presentations; the checklist penalizes AI-generated reviews.
+## Repository map and scope
 
-Source requirements come from the instructor-provided Portfolio Projects handout, Deliverables Checklist, and Presentation Rubric. Dataset size, stack, targets, and role split above are our proposals. Do not upload the course PDFs without permission. This project is independent and does not represent Dropbox support.
+| Path | Contents |
+| --- | --- |
+| `apps/web/` | Static pages, navigation and client-side interactions |
+| `services/api/` | FastAPI, worker thread, SQLite store and human review |
+| `packages/evaluation/` | Provider calls, validation, model contracts and run engine |
+| `packages/statistics/` | Scores, bootstrap intervals and gate calculations |
+| `configs/` | Versioned model, prompt, rubric and release settings |
+| `data/` | Policy provenance and evaluation scenarios |
+| `infra/` | CLI, Dockerfile, report export and measurement scripts |
+| `reports/` | Saved measurement evidence and report exports |
+| `docs/` | Architecture, setup, dataset and team documentation |
+
+V1 does not include model training, a retrieval pipeline, real customer-account actions, public deployment, live traffic monitoring, or automatic judge promotion. The architecture deliberately uses one Python process and SQLite for course-scale experiments. See [feature status](docs/feature-status.md) for remaining work. Presentation preparation and handwritten dataset evidence are team deliverables outside the implemented app.

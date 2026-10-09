@@ -12,3 +12,7 @@ coverage/
 .DS_Store
 *.log
 reports/raw/
+work/
+*.egg-info/
+configs/judges/live.json
+reports/*.json
