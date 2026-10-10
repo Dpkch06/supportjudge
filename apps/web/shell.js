@@ -16,4 +16,6 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open){setOpen(false);toggle.focus();}});
   mobile.addEventListener('change',()=>{open=mobile.matches?false:stored;render();});
   render();
+  const metricsScript=document.createElement('script');
+  metricsScript.src='/static/observability.js';document.head.append(metricsScript);
 })();
