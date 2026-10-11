@@ -46,7 +46,8 @@ class Case(Record):
 
     @model_validator(mode="after")
     def answers_present(self):
-        if set(self.answers) != {"A", "B"} or not all(self.answers.values()):
+        generate_only = not self.answers and self.labels.status == "unreviewed" and not self.labels.verdicts
+        if not generate_only and (set(self.answers) != {"A", "B"} or not all(self.answers.values())):
             raise ValueError("Provide exactly two nonempty fixture answers, A and B")
         if not set(self.labels.verdicts).issubset({"A", "B"}):
             raise ValueError("Unknown labeled answer")
